@@ -1,20 +1,37 @@
 import axios from 'axios';
-import React, { SyntheticEvent, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
 import Wrapper from "../../components/Wrapper";
 import ImageUpload from "../../components/ImageUpload";
 
-const ProductCreate = () => {
+const ProductEdit = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [image, setImage] = useState('');
     const [price, setPrice] = useState('');
     const [redirect, setRedirect] = useState(false);
+    const { id } = useParams()
+    const ref = useRef<HTMLInputElement>(null);
+
+
+    useEffect(() => {
+        (
+            async () => {
+
+                const { data } = await axios.get(`products/${id}`, { withCredentials: true });
+
+                setTitle(data.title)
+                setDescription(data.description)
+                setPrice(data.price)
+                setImage(data.image)
+            }
+        )()
+    }, [id])
 
     const submit = async (e: SyntheticEvent) => {
         e.preventDefault();
 
-        await axios.post('products', {
+        await axios.put(`products/${id}`, {
             title,
             description,
             image,
@@ -22,6 +39,12 @@ const ProductCreate = () => {
         }, { withCredentials: true });
 
         setRedirect(true);
+    }
+    const updateImage = (url: string) => {
+        if (ref.current) {
+            ref.current.value = url;
+        }
+        setImage(url);
     }
 
     if (redirect) {
@@ -34,12 +57,14 @@ const ProductCreate = () => {
                 <div className="mb-3">
                     <label>Title</label>
                     <input className="form-control"
+                        defaultValue={title}
                         onChange={e => setTitle(e.target.value)}
                     />
                 </div>
                 <div className="mb-3">
                     <label>Description</label>
                     <textarea className="form-control"
+                        defaultValue={description}
                         onChange={e => setDescription(e.target.value)}
                     ></textarea>
                 </div>
@@ -47,15 +72,18 @@ const ProductCreate = () => {
                     <label>Image</label>
                     <div className="input-group">
                         <input className="form-control"
-                            value={image}
+                            ref={ref}
+                            defaultValue={image}
                             onChange={e => setImage(e.target.value)}
                         />
-                        <ImageUpload uploaded={setImage} />
+                        <ImageUpload uploaded={updateImage} />
                     </div>
                 </div>
                 <div className="mb-3">
                     <label>Price</label>
+
                     <input type="number" className="form-control"
+                        defaultValue={price}
                         onChange={e => setPrice(e.target.value)}
                     />
                 </div>
@@ -65,4 +93,4 @@ const ProductCreate = () => {
     );
 };
 
-export default ProductCreate;
+export default ProductEdit;

@@ -4,12 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from "axios";
+import { configStore } from './redux/configStore';
+import { Provider } from 'react-redux';
 
 axios.defaults.baseURL = ('http://localhost:8000/api/');
 
+const store = configStore();
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

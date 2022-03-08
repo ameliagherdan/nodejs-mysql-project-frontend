@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import {Link} from "react-router-dom";
-import {User} from "../models/users";
+import { Link } from "react-router-dom";
+import { User } from "../models/users";
 
 const Nav = () => {
 
@@ -9,21 +9,22 @@ const Nav = () => {
 
     useEffect(() => {
         (
-        async () => {
+            async () => {
 
-            const {data} = await axios.get("user", {withCredentials: true});
-            setUser(new User(
-                data.id,
-                data.first_name,
-                data.last_name,
-                data.email,
-                data.role
-            ))
+                const { data } = await axios.get("user", { withCredentials: true });
+                setUser(new User(
+                    data.id,
+                    data.first_name,
+                    data.last_name,
+                    data.email,
+                    data.role
+                ))
 
-        }) ()}, []);
+            })()
+    }, []);
 
     const logout = async () => {
-        await axios.post('logout', {}, {withCredentials: true});
+        await axios.post('logout', {}, { withCredentials: true });
     }
 
     return (
